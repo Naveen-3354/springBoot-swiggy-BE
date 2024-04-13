@@ -1,4 +1,4 @@
-package spring.boot.swiggyBE.validation;
+package spring.boot.swiggyBE.components.validation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

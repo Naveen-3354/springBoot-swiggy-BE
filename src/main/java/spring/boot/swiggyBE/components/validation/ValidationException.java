@@ -1,4 +1,4 @@
-package spring.boot.swiggyBE.validation;
+package spring.boot.swiggyBE.components.validation;
 
 public class ValidationException extends RuntimeException{
     public ValidationException(String message) {

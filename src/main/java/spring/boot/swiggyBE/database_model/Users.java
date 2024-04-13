@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import spring.boot.swiggyBE.common_model.Status;
 
 import java.util.Date;
+import java.util.Set;
 
 @Document
 @Data
@@ -25,5 +26,6 @@ public class Users {
     private String password;
     private Date createdOn;
     private Status status;
+    private Set<Roles> roles;
 
 }
