@@ -1,84 +1,93 @@
 package spring.boot.swiggyBE.service;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import spring.boot.swiggyBE.common_model.Login;
-import spring.boot.swiggyBE.common_model.Register;
-import spring.boot.swiggyBE.common_model.response.JwtResponse;
 import spring.boot.swiggyBE.common_model.Status;
-import spring.boot.swiggyBE.database_model.Roles;
 import spring.boot.swiggyBE.database_model.Users;
 import spring.boot.swiggyBE.repository.UserRepository;
-import spring.boot.swiggyBE.security.components.JwtUtils;
-import spring.boot.swiggyBE.security.components.UserDetailsImpl;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    JwtUtils jwtUtils;
-
-    public ResponseEntity addNewUser(Register register) {
-        try {
-            boolean emailExist = userRepository.existsByEmail(register.getEmail());
-            boolean numberExist = userRepository.existsByMobileNumber(register.getNumber());
-            if (!emailExist) {
-                if (!numberExist) {
-                    Users newUsers = Users.builder()
-                            .userName(register.getUserName())
-                            .email(register.getEmail())
-                            .mobileNumber(register.getNumber())
-                            .password(register.getPassword())
-                            .status(Status.ACTIVE)
-                            .createdOn(new Date())
-                            .roles(new HashSet<>(List.of(new Roles[]{Roles.ROLE_USER})))
-                            .build();
-                    return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully.");
-                } else {
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("Mobile number already registered.");
-                }
-            }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already registered.");
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("!Server stopped working.");
-        }
+    public ResponseEntity<?> getAllUser(){
+        return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll());
     }
 
-    public ResponseEntity<?> verifyUser(Login login) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
+    public ResponseEntity<?> getByEmail(String email){
+        Optional<Users> users = userRepository.findByEmail(email);
+        return users.map(value -> ResponseEntity.status(HttpStatus.OK).body(value)).orElseGet(() -> (ResponseEntity) ResponseEntity.notFound());
+    }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+    public ResponseEntity<?> getByMobileNumber(String number){
+        Optional<Users> users = userRepository.findByMobileNumber(number);
+        return users.map(value -> ResponseEntity.status(HttpStatus.OK).body(value)).orElseGet(() -> (ResponseEntity) ResponseEntity.notFound());
+    }
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+    public ResponseEntity<?> getByStatus(Status status){
+        Optional<Users> users = userRepository.findByStatus(status);
+        if(users.isPresent()){
+            return ResponseEntity.status(HttpStatus.OK).body(users.get());
+        }
+        return (ResponseEntity) ResponseEntity.notFound();
+    }
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                roles));
+
+    public ResponseEntity<?> updateEmail(String id, String email){
+        Optional<Users> users = userRepository.findById(id);
+        if(users.isPresent()){
+            users.get().setEmail(email);
+            userRepository.save(users.get());
+            return ResponseEntity.ok("User email updated.");
+        }
+        return (ResponseEntity) ResponseEntity.notFound();
+    }
+
+    public ResponseEntity<?> updateMobileNmber(String id, String number){
+        Optional<Users> users = userRepository.findById(id);
+        if(users.isPresent()){
+            users.get().setMobileNumber(number);
+            userRepository.save(users.get());
+            return ResponseEntity.ok("User number updated.");
+        }
+        return (ResponseEntity) ResponseEntity.notFound();
+    }
+
+    public ResponseEntity<?> updatePassword(String id, String password){
+        Optional<Users> users = userRepository.findById(id);
+        if(users.isPresent()){
+            users.get().setPassword(passwordEncoder.encode(password));
+            userRepository.save(users.get());
+            return ResponseEntity.ok("User password updated.");
+        }
+        return (ResponseEntity) ResponseEntity.notFound();
+    }
+
+    public ResponseEntity<?> updateRoles(String id, Set roles){
+        Optional<Users> users = userRepository.findById(id);
+        if(users.isPresent()){
+            users.get().setRoles(roles);
+            userRepository.save(users.get());
+            return ResponseEntity.ok("User roles updated.");
+        }
+        return (ResponseEntity) ResponseEntity.notFound();
+    }
+
+    public ResponseEntity<?> updateStatusInactive(String id, String  status){
+        Optional<Users> users = userRepository.findById(id);
+        if(users.isPresent()){
+            users.get().setStatus(Status.valueOf(status));
+            userRepository.save(users.get());
+            return ResponseEntity.ok("User status updated.");
+        }
+        return (ResponseEntity) ResponseEntity.notFound();
     }
 }

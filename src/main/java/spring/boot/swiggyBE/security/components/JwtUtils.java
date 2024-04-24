@@ -25,31 +25,33 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication;
-        return generateTokenFromUsername(userPrincipal.getUsername(), userPrincipal.getAuthorities());
-    }
-
-    public String generateTokenFromUsername(String email, Collection<GrantedAuthority> roles) {
-        Map<String,String > claims = new HashMap<>();
-        claims.put("Email", email);
-        claims.put("Roles", roles.toString());
-        return Jwts.builder().claims(claims).issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("email", userPrincipal.getEmail());
+        extraClaims.put("role",userPrincipal.getAuthorities());
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
     private Key key() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
     public String getEmailFromJwtToken(String token) {
+        return extractClaims(token).get("email0").toString();
+    }
+
+    public Claims extractClaims(String jwt){
         return Jwts.parser()
                 .setSigningKey(key()).build()
-                .parseClaimsJws(token)
-                .getBody().get("Email")
-                .toString();
+                .parseClaimsJws(jwt)
+                .getBody();
     }
+
 
     public boolean validateJwtToken(String authToken) {
         try {

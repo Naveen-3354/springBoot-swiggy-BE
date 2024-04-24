@@ -11,10 +11,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity<Object> handleValidationException(BindException ex) {
-        // Construct a custom error response
         String errorMessage = "Validation error: " + ex.getFieldError().getDefaultMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
-    // Add more exception handlers as needed for other types of exceptions
 }
