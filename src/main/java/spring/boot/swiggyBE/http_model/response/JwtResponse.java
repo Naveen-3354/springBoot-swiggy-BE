@@ -1,4 +1,4 @@
-package spring.boot.swiggyBE.common_model.response;
+package spring.boot.swiggyBE.http_model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

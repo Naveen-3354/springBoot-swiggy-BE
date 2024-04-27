@@ -11,9 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import spring.boot.swiggyBE.common_model.Login;
-import spring.boot.swiggyBE.common_model.Register;
-import spring.boot.swiggyBE.common_model.Status;
+import spring.boot.swiggyBE.components.generators.Generator;
+import spring.boot.swiggyBE.http_model.request.Login;
+import spring.boot.swiggyBE.http_model.request.Register;
+import spring.boot.swiggyBE.http_model.request.Status;
 import spring.boot.swiggyBE.database_model.Roles;
 import spring.boot.swiggyBE.database_model.Users;
 import spring.boot.swiggyBE.repository.UserRepository;
@@ -30,6 +31,7 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private final Generator generator;
 
     public ResponseEntity addNewUser(Register register) {
         try {
@@ -42,6 +44,7 @@ public class AuthenticationService {
                             .userName(register.getUserName())
                             .email(register.getEmail())
                             .mobileNumber(register.getNumber())
+                            .userId(generator.userIdGenerator(userRepository.count()))
                             .password(passwordEncoder.encode(register.getPassword()))
                             .status(Status.ACTIVE)
                             .createdOn(new Date())

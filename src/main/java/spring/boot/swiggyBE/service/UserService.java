@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import spring.boot.swiggyBE.common_model.Status;
+import spring.boot.swiggyBE.http_model.request.Status;
 import spring.boot.swiggyBE.database_model.Users;
 import spring.boot.swiggyBE.repository.UserRepository;
 

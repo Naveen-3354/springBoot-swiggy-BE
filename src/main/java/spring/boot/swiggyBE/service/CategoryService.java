@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import spring.boot.swiggyBE.common_model.Status;
+import spring.boot.swiggyBE.components.generators.Generator;
+import spring.boot.swiggyBE.http_model.request.Status;
 import spring.boot.swiggyBE.database_model.Categories;
 import spring.boot.swiggyBE.repository.CategoryRepository;
 
@@ -17,16 +18,17 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final Generator generator;
 
     public ResponseEntity<String> addCategory(String id, Categories categories) {
-        if (!categoryRepository.existByCategoryName(categories.getCategoryName())) {
-            categories.setCategoryNo(categories.getCategoryName().toLowerCase().substring(0, 4) + categoryRepository.count() + 1);
+        if (!categoryRepository.existsByCategoryName(categories.getCategoryName())) {
+            categories.setCategoryNo(generator.categoryIdGenerator(categories.getCategoryName(),categoryRepository.count()));
             categories.setCreatedBy(id);
             categories.setCreatedOn(new Date());
             categories.setStatus(Status.ACTIVE);
             categoryRepository.save(categories);
             return ResponseEntity.ok("Category created sccessfully.");
-        } else if (categoryRepository.existByCategoryName(categories.getCategoryName())) {
+        } else if (categoryRepository.existsByCategoryName(categories.getCategoryName())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Category already found.");
         }
         return (ResponseEntity<String>) ResponseEntity.internalServerError();

@@ -2,7 +2,7 @@ package spring.boot.swiggyBE.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import spring.boot.swiggyBE.common_model.Status;
+import spring.boot.swiggyBE.http_model.request.Status;
 import spring.boot.swiggyBE.database_model.Users;
 
 import java.util.Optional;

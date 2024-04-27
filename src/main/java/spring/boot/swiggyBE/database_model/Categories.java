@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import spring.boot.swiggyBE.common_model.Status;
+import spring.boot.swiggyBE.http_model.request.Status;
 
 import java.util.Date;
 

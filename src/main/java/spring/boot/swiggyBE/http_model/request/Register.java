@@ -1,4 +1,4 @@
-package spring.boot.swiggyBE.common_model;
+package spring.boot.swiggyBE.http_model.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

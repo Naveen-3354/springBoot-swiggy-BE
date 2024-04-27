@@ -3,7 +3,7 @@ package spring.boot.swiggyBE.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import spring.boot.swiggyBE.common_model.Status;
+import spring.boot.swiggyBE.http_model.request.Status;
 import spring.boot.swiggyBE.service.UserService;
 
 import java.util.Map;

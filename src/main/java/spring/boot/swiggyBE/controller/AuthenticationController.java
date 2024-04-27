@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import spring.boot.swiggyBE.common_model.Login;
-import spring.boot.swiggyBE.common_model.Register;
+import spring.boot.swiggyBE.http_model.request.Login;
+import spring.boot.swiggyBE.http_model.request.Register;
 import spring.boot.swiggyBE.service.AuthenticationService;
 
 @RestController

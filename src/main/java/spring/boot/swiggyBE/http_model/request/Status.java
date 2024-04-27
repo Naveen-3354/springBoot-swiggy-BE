@@ -1,4 +1,4 @@
-package spring.boot.swiggyBE.common_model;
+package spring.boot.swiggyBE.http_model.request;
 
 public enum Status {
 
